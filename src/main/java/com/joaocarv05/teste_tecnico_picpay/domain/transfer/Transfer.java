@@ -1,6 +1,6 @@
-package domain.transfer;
+package com.joaocarv05.teste_tecnico_picpay.domain.transfer;
 
-import domain.user.User;
+import com.joaocarv05.teste_tecnico_picpay.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

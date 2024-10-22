@@ -1,11 +1,11 @@
-package services;
+package com.joaocarv05.teste_tecnico_picpay.services;
 
+import com.joaocarv05.teste_tecnico_picpay.domain.transfer.Transfer;
+import com.joaocarv05.teste_tecnico_picpay.domain.user.User;
+import com.joaocarv05.teste_tecnico_picpay.domain.user.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repositories.TransferRepository;
-import domain.transfer.Transfer;
-import domain.user.User;
-import domain.user.UserType;
+import com.joaocarv05.teste_tecnico_picpay.repositories.TransferRepository;
 
 import java.math.BigDecimal;
 import java.util.Optional;
