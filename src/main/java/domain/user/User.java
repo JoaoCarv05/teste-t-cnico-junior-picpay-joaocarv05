@@ -1,4 +1,4 @@
-package user;
+package domain.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "user")
+@Table(name = "domain")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
