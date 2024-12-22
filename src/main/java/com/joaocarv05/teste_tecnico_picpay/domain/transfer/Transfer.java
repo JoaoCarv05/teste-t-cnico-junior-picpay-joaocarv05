@@ -2,14 +2,12 @@ package com.joaocarv05.teste_tecnico_picpay.domain.transfer;
 
 import com.joaocarv05.teste_tecnico_picpay.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
+@Builder
 @Entity
 @Table(name = "transfer")
 @NoArgsConstructor
@@ -18,7 +16,7 @@ import java.time.ZonedDateTime;
 @Setter
 public class Transfer{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(name = "date")
     ZonedDateTime date;

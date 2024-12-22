@@ -1,12 +1,12 @@
 package com.joaocarv05.teste_tecnico_picpay.services;
 
 import com.joaocarv05.teste_tecnico_picpay.domain.user.User;
+import com.joaocarv05.teste_tecnico_picpay.domain.user.UserType;
 import com.joaocarv05.teste_tecnico_picpay.repositories.UserRepository;
-import com.joaocarv05.teste_tecnico_picpay.domain.user.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import java.math.BigDecimal;
 
 @Service
 public class UserService {
@@ -16,13 +16,29 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    public User createUser(UserDTO userDTO){
-        return userRepository.save(new User(userDTO));
+    public User saveUser(User user){
+        return userRepository.save(user);
     }
     public User findUserById(Long id){
-        Optional<User> rawUser = userRepository.findById(id);
-        if (rawUser.isPresent()){
-            return rawUser.get();
-        }else throw new RuntimeException("Usuário não encontrado");
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
+
+    public UserDetails findUserByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
+    /**
+     * Verifica se uma transação pode ou não ser efetuada com base no saldo do usuário e na quantia a ser transferida.
+     * @param payer agente que realiza a transferência
+     * @param amount quantia a ser transferida
+     */
+    public void validateUserTransfer(User payer, BigDecimal amount) {
+        if (payer.getBalance().compareTo(amount) < 0){
+            throw new RuntimeException("Saldo insuficiente");
+        }
+        if (payer.getUserType() == UserType.MERCHANT){
+            throw new RuntimeException("Usuário do tipo lojista não pode efetuar transações");
+        }
+    }
+
 }
