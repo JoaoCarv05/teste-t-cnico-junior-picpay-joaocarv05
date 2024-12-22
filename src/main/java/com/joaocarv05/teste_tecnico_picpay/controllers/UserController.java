@@ -19,13 +19,13 @@ import com.joaocarv05.teste_tecnico_picpay.services.UserService;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
     TokenService tokenService;
     AuthenticationManager authenticationManager;
     UserService userService;
 
     @Autowired
-    public UserController(AuthenticationManager authenticationManager, UserService userService) {
+    public UserController(TokenService tokenService, AuthenticationManager authenticationManager, UserService userService) {
+        this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
     }
