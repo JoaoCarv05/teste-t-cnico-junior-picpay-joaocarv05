@@ -41,13 +41,14 @@ public class FilterCustom extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = this.TokenRecover(request);
         String path = request.getRequestURI();
+
         if (path.equals("/user/login") || path.equals("/user/register")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         if (token != null) {
-            String login = tokenService.verify(token);
+            String login = tokenService.verifyToken(token);
             UserDetails user = userService.findUserByEmail(login);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
