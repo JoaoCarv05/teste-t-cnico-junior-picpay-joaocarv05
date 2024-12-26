@@ -6,21 +6,16 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Date;
 
 @Service
 public class TokenService {
 
-    SecureRandom random = new SecureRandom();
-    byte[] sharedSecret = new byte[32];
-
-    public TokenService() {
-        random.nextBytes(sharedSecret);
-    }
+    @Value("${jwtsecret.value}")
+    String JWTsecret;
 
     /**
      * retorna um JWT com o login do usúario assinado.
@@ -30,12 +25,11 @@ public class TokenService {
      * @throws JOSEException
      */
     public String sign(User user) throws JOSEException {
-
-        JWSSigner jwsSigner = new MACSigner(sharedSecret);
+        JWSSigner jwsSigner = new MACSigner(JWTsecret);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .issuer("API")
-                .subject("my-apy")
-                .expirationTime(new Date(new Date().getTime() + 60 * 1000))
+                .subject("my-api")
+                .expirationTime(new Date(new Date().getTime() + 60 * 60 * 1000))
                 .claim("login", user.getEmail())
                 .build();
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256
@@ -55,7 +49,7 @@ public class TokenService {
     public String verifyToken(String token) throws JOSEException, ParseException {
         SignedJWT signedJWT = SignedJWT.parse(token);
         JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-        JWSVerifier verifier = new MACVerifier(sharedSecret);
+        JWSVerifier verifier = new MACVerifier(JWTsecret);
         if (!signedJWT.verify(verifier) || new Date().after(claims.getExpirationTime())) {
             throw new JOSEException("token inválido e/ou expirado");
         } else {
