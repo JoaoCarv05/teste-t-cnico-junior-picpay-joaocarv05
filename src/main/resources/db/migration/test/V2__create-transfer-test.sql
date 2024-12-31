@@ -1,0 +1,9 @@
+CREATE TABLE transfer (
+id BIGINT PRIMARY KEY AUTO_INCREMENT,
+date DATE NOT NULL,
+amount DECIMAL,
+payee BIGINT,
+payer BIGINT,
+FOREIGN KEY (payee) REFERENCES users(id),
+FOREIGN KEY (payer) REFERENCES users(id)
+);
