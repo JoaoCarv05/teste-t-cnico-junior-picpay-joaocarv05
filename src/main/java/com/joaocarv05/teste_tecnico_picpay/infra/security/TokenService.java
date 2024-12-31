@@ -9,14 +9,17 @@ import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 @Service
 public class TokenService {
 
-    @Value("${jwtsecret.value}")
+    @Value("${jwttoken.jwtsecret.value}")
     String JWTsecret;
-
+    @Value("${jwttoken.expiration.value}")
+    int JWTexpirationTimeInMinutes;
     /**
      * retorna um JWT com o login do usúario assinado.
      *
@@ -55,5 +58,11 @@ public class TokenService {
         } else {
             return claims.getStringClaim("login");
         }
+    }
+
+    private Date expirationTokenTime() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime newTime = now.plusMinutes(JWTexpirationTimeInMinutes);
+        return Date.from(newTime.toInstant(ZoneOffset.of("-03:00")));
     }
 }
