@@ -35,7 +35,7 @@ public class UserController {
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
         Authentication authentication = authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok(tokenService.sign((User) authentication.getPrincipal()));
+        return ResponseEntity.ok(tokenService.createSignedJWT((User) authentication.getPrincipal()));
     }
 
     @PostMapping("/register")
