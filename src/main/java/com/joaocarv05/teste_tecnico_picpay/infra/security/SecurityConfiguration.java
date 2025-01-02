@@ -1,4 +1,5 @@
 package com.joaocarv05.teste_tecnico_picpay.infra.security;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,20 +21,23 @@ public class SecurityConfiguration {
 
     @Autowired
     FilterCustom filterCustom;
+    @Autowired
+    CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager) throws Exception {
         return httpSecurity
-                .securityContext(httpSecuritySecurityContextConfigurer -> httpSecuritySecurityContextConfigurer.requireExplicitSave(true))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManager -> authorizationManager
                         .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/transfer").hasRole("COMMON_USER")
                         .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .securityContext(httpSecuritySecurityContextConfigurer -> httpSecuritySecurityContextConfigurer.requireExplicitSave(true))
+                .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(filterCustom, UsernamePasswordAuthenticationFilter.class)
                 .authenticationManager(authenticationManager)
+                .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .build();
     }
 
@@ -43,7 +47,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
