@@ -18,11 +18,11 @@ import java.io.IOException;
 @Component
 public class FilterCustom extends OncePerRequestFilter {
 
-    private TokenService tokenService;
+    private TokenServiceImpl tokenService;
     private UserService userService;
 
     @Autowired
-    public FilterCustom(TokenService tokenService, UserService userService) {
+    public FilterCustom(TokenServiceImpl tokenService, UserService userService) {
         this.tokenService = tokenService;
         this.userService = userService;
     }
@@ -39,7 +39,6 @@ public class FilterCustom extends OncePerRequestFilter {
     @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = this.TokenRecover(request);
         String path = request.getRequestURI();
 
         if (path.equals("/user/login") || path.equals("/user/register")) {
@@ -47,8 +46,8 @@ public class FilterCustom extends OncePerRequestFilter {
             return;
         }
 
-        if (token != null) {
-            String login = tokenService.verifyToken(token);
+        if (TokenRecover(request)!= null) {
+            String login = tokenService.verifyToken(TokenRecover(request));
             UserDetails user = userService.findUserByEmail(login);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
