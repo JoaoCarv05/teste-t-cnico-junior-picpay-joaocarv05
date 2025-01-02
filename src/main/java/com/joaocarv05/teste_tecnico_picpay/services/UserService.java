@@ -2,6 +2,7 @@ package com.joaocarv05.teste_tecnico_picpay.services;
 
 import com.joaocarv05.teste_tecnico_picpay.domain.user.User;
 import com.joaocarv05.teste_tecnico_picpay.domain.user.UserType;
+import com.joaocarv05.teste_tecnico_picpay.exceptions.TransactionAuthorizationException;
 import com.joaocarv05.teste_tecnico_picpay.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,10 +35,10 @@ public class UserService {
      */
     public void validateUserTransfer(User payer, BigDecimal amount) {
         if (payer.getBalance().compareTo(amount) < 0){
-            throw new RuntimeException("Saldo insuficiente");
+            throw new TransactionAuthorizationException("Saldo Insuficiente.");
         }
         if (payer.getUserType() == UserType.MERCHANT){
-            throw new RuntimeException("Usuário do tipo lojista não pode efetuar transações");
+            throw new TransactionAuthorizationException("Usuário do tipo lojista não pode efetuar transações");
         }
     }
 
