@@ -10,7 +10,6 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -24,28 +23,24 @@ public class TokenServiceImpl implements TokenService{
     int JWTexpirationTimeInMinutes;
 
 
+    @Override
     @SneakyThrows
-    public String createSignedJWT(User user) {
-            return getSignedToken(user);
+    public boolean isTokenAuthentic(String token){
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        JWSVerifier verifier = new MACVerifier(JWTsecret);
+        return signedJWT.verify(verifier);
     }
 
+    @Override
     @SneakyThrows
-    public String verifyToken(String token){
-            return getVerifiedToken(token);
-    }
-
-    private String getVerifiedToken(String token) throws ParseException, JOSEException {
+    public String getTokenClaim(String token){
         SignedJWT signedJWT = SignedJWT.parse(token);
         JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-        JWSVerifier verifier = new MACVerifier(JWTsecret);
-        if (!signedJWT.verify(verifier)) {
-            return null;
-        } else {
-            return claims.getStringClaim("login");
-        }
+        return claims.getStringClaim("login");
     }
-
-    private String getSignedToken(User user) throws JOSEException {
+    @Override
+    @SneakyThrows
+    public String createSignedJWT(User user){
         JWSSigner jwsSigner = new MACSigner(JWTsecret);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .issuer("API")
