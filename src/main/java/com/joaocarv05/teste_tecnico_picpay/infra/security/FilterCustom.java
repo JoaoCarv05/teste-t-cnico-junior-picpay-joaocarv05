@@ -17,12 +17,11 @@ import java.io.IOException;
 
 @Component
 public class FilterCustom extends OncePerRequestFilter {
-
-    private TokenServiceImpl tokenService;
+    private TokenService tokenService;
     private UserService userService;
 
     @Autowired
-    public FilterCustom(TokenServiceImpl tokenService, UserService userService) {
+    public FilterCustom(TokenService tokenService, UserService userService) {
         this.tokenService = tokenService;
         this.userService = userService;
     }
@@ -46,8 +45,8 @@ public class FilterCustom extends OncePerRequestFilter {
             return;
         }
 
-        if (TokenRecover(request)!= null) {
-            String login = tokenService.verifyToken(TokenRecover(request));
+        if (TokenRecover(request)!= null && tokenService.isTokenAuthentic(TokenRecover(request))) {
+            String login = tokenService.getTokenClaim(TokenRecover(request));
             UserDetails user = userService.findUserByEmail(login);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
